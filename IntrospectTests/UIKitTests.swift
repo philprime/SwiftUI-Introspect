@@ -8,11 +8,11 @@ enum TestUtils {
     enum Constants {
         static let timeout: TimeInterval = 3
     }
-    
+
     static func present<ViewType: View>(view: ViewType) {
-        
+
         let hostingController = UIHostingController(rootView: view)
-        
+
         let application = UIApplication.shared
         application.windows.forEach { window in
             if let presentedViewController = window.rootViewController?.presentedViewController {
@@ -118,7 +118,8 @@ private struct TabRootTestView: View {
     }
 }
 
-@available(iOS 14, tvOS 14, *)
+@available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
+@available(macOS, unavailable)
 private struct PageTabViewStyleTestView: View {
 
     let spy: (UICollectionView, UIScrollView) -> Void
@@ -135,8 +136,9 @@ private struct PageTabViewStyleTestView: View {
     }
 }
 
+@available(iOS 13.0, tvOS 13.0, macOS 10.15.0, *)
 private struct ListTestView: View {
-    
+
     let spy1: () -> Void
     let spy2: () -> Void
     let spyCell1: () -> Void
@@ -184,10 +186,10 @@ private struct ListTestView: View {
 }
 
 private struct ScrollTestView: View {
-    
+
     let spy1: (UIScrollView) -> Void
     let spy2: (UIScrollView) -> Void
-    
+
     var body: some View {
         HStack {
             ScrollView {
@@ -235,11 +237,11 @@ private struct TextFieldTestView: View {
     let spy2: (UITextField) -> Void
     let spy3: (UITextField) -> Void
     @State private var textFieldValue = ""
-    
+
     let textField1Placeholder = "Text Field 1"
     let textField2Placeholder = "Text Field 2"
     let textField3Placeholder = "Text Field 3"
-    
+
     var body: some View {
         VStack {
             TextField(textField1Placeholder, text: $textFieldValue)
@@ -370,7 +372,7 @@ private struct MapTestView: View {
 
 class UIKitTests: XCTestCase {
     func testNavigation() {
-        
+
         let expectation = XCTestExpectation()
         let view = NavigationTestView(spy: {
             expectation.fulfill()
@@ -378,9 +380,9 @@ class UIKitTests: XCTestCase {
         TestUtils.present(view: view)
         wait(for: [expectation], timeout: TestUtils.Constants.timeout)
     }
-    
+
     func testViewController() {
-        
+
         let expectation = XCTestExpectation()
         let view = ViewControllerTestView(spy: {
             expectation.fulfill()
@@ -388,9 +390,9 @@ class UIKitTests: XCTestCase {
         TestUtils.present(view: view)
         wait(for: [expectation], timeout: TestUtils.Constants.timeout)
     }
-    
+
     func testTabView() {
-        
+
         let expectation = XCTestExpectation()
         let view = TabTestView(spy: {
             expectation.fulfill()
@@ -398,17 +400,7 @@ class UIKitTests: XCTestCase {
         TestUtils.present(view: view)
         wait(for: [expectation], timeout: TestUtils.Constants.timeout)
     }
-    
-    func testTabViewRoot() {
-        
-        let expectation = XCTestExpectation()
-        let view = TabRootTestView(spy: {
-            expectation.fulfill()
-        })
-        TestUtils.present(view: view)
-        wait(for: [expectation], timeout: TestUtils.Constants.timeout)
-    }
-    
+
     func testList() {
         if #available(tvOS 16, *) {
             return // TODO: verify whether List still uses NSTableView under the hood in tvOS 16
@@ -418,7 +410,7 @@ class UIKitTests: XCTestCase {
         let expectation2 = XCTestExpectation()
         let cellExpectation1 = XCTestExpectation()
         let cellExpectation2 = XCTestExpectation()
-        
+
         let view = ListTestView(
             spy1: { expectation1.fulfill() },
             spy2: { expectation2.fulfill() },
@@ -428,9 +420,9 @@ class UIKitTests: XCTestCase {
         TestUtils.present(view: view)
         wait(for: [expectation1, expectation2, cellExpectation1, cellExpectation2], timeout: TestUtils.Constants.timeout)
     }
-    
+
     func testScrollView() throws {
-        
+
         let expectation1 = XCTestExpectation()
         let expectation2 = XCTestExpectation()
 
@@ -484,15 +476,15 @@ class UIKitTests: XCTestCase {
     }
 
     func testTextField() throws {
-        
+
         let expectation1 = XCTestExpectation()
         let expectation2 = XCTestExpectation()
         let expectation3 = XCTestExpectation()
-        
+
         var textField1: UITextField?
         var textField2: UITextField?
         var textField3: UITextField?
-        
+
         let view = TextFieldTestView(
             spy1: {
                 textField1 = $0
@@ -509,18 +501,18 @@ class UIKitTests: XCTestCase {
         )
         TestUtils.present(view: view)
         wait(for: [expectation1, expectation2, expectation3], timeout: TestUtils.Constants.timeout)
-        
+
         let unwrappedTextField1 = try XCTUnwrap(textField1)
         let unwrappedTextField2 = try XCTUnwrap(textField2)
         let unwrappedTextField3 = try XCTUnwrap(textField3)
-        
+
         XCTAssertEqual(unwrappedTextField1.placeholder, view.textField1Placeholder)
         XCTAssertEqual(unwrappedTextField2.placeholder, view.textField2Placeholder)
         XCTAssertEqual(unwrappedTextField3.placeholder, view.textField3Placeholder)
     }
-    
+
     func testSegmentedControl() {
-        
+
         let expectation = XCTestExpectation()
         let view = SegmentedControlTestView(spy: {
             expectation.fulfill()
@@ -530,7 +522,7 @@ class UIKitTests: XCTestCase {
     }
 
     func testRootNavigation() {
-        
+
         let expectation = XCTestExpectation()
         let view = NavigationRootTestView(spy: {
             expectation.fulfill()
@@ -551,7 +543,7 @@ class UIKitTests: XCTestCase {
     }
 
     func testToggle() {
-        
+
         let expectation = XCTestExpectation()
         let view = ToggleTestView(spy: {
             expectation.fulfill()
@@ -561,7 +553,7 @@ class UIKitTests: XCTestCase {
     }
 
     func testSlider() {
-        
+
         let expectation = XCTestExpectation()
         let view = SliderTestView(spy: {
             expectation.fulfill()
@@ -571,7 +563,7 @@ class UIKitTests: XCTestCase {
     }
 
     func testStepper() {
-        
+
         let expectation = XCTestExpectation()
         let view = StepperTestView(spy: {
             expectation.fulfill()
@@ -581,7 +573,7 @@ class UIKitTests: XCTestCase {
     }
 
     func testDatePicker() {
-        
+
         let expectation = XCTestExpectation()
         let view = DatePickerTestView(spy: {
             expectation.fulfill()
@@ -589,7 +581,7 @@ class UIKitTests: XCTestCase {
         TestUtils.present(view: view)
         wait(for: [expectation], timeout: TestUtils.Constants.timeout)
     }
-    
+
     @available(iOS 14, *)
     func testTextEditor() {
 
@@ -600,7 +592,7 @@ class UIKitTests: XCTestCase {
         TestUtils.present(view: view)
         wait(for: [expectation], timeout: TestUtils.Constants.timeout)
     }
-    
+
     @available(iOS 14, *)
     func testColorPicker() {
 
@@ -612,7 +604,7 @@ class UIKitTests: XCTestCase {
         wait(for: [expectation], timeout: TestUtils.Constants.timeout)
     }
 
-    @available(iOS 14, tvOS 14, *)
+    @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
     func testPagedTabView() throws {
 
         var collectionView1: UICollectionView?
@@ -668,7 +660,7 @@ class UIKitTests: XCTestCase {
         wait(for: [expectation], timeout: TestUtils.Constants.timeout)
     }
     #endif
-    
+
     @available(iOS 14, tvOS 14, *)
     func testMapView() {
         let expectation = XCTestExpectation()
