@@ -401,6 +401,16 @@ class UIKitTests: XCTestCase {
         wait(for: [expectation], timeout: TestUtils.Constants.timeout)
     }
 
+    func testTabViewRoot() {
+
+        let expectation = XCTestExpectation()
+        let view = TabRootTestView(spy: {
+            expectation.fulfill()
+        })
+        TestUtils.present(view: view)
+        wait(for: [expectation], timeout: TestUtils.Constants.timeout)
+    }
+
     func testList() {
         if #available(tvOS 16, *) {
             return // TODO: verify whether List still uses NSTableView under the hood in tvOS 16
